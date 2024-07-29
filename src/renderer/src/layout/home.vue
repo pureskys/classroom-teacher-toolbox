@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <h1>guanyu8</h1>
-  </div>
+  <h1>我是主页</h1>
 </template>
 
 <script setup></script>

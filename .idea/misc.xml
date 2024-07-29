@@ -3,4 +3,8 @@
   <component name="JavaScriptSettings">
     <option name="languageLevel" value="FLOW" />
   </component>
+  <component name="WebPackConfiguration">
+    <option name="mode" value="AUTO" />
+    <option name="path" value="$PROJECT_DIR$/electron.vite.config.mjs" />
+  </component>
 </project>

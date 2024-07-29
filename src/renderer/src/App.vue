@@ -5,7 +5,7 @@
     <div class="aside">
       <!--      标题展示块-->
       <div class="aside-header">
-        <el-avatar src="./src/assets/cut.jpg" fit="cover" shape="square" size="large"></el-avatar>
+        <el-avatar :src="icon_cut" fit="cover" shape="square" size="large"></el-avatar>
         <el-text type="primary" style="font-size: 1.5em; font-weight: bold; letter-spacing: 4px"
           >CTT
         </el-text>
@@ -51,6 +51,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import icon_cut from '@renderer/assets/icons/cut.jpg'
 
 let menu_list = [
   {
