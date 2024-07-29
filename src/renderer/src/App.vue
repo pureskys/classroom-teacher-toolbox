@@ -5,12 +5,10 @@
     <div class="aside">
       <!--      标题展示块-->
       <div class="aside-header">
-        <el-image
-          src="./src/assets/cut.jpg"
-          fit="cover"
-          style="height: 50px; width: 50px"
-        ></el-image>
-        <el-text>CTT</el-text>
+        <el-avatar src="./src/assets/cut.jpg" fit="cover" shape="square" size="large"></el-avatar>
+        <el-text type="primary" style="font-size: 1.5em; font-weight: bold; letter-spacing: 4px"
+          >CTT
+        </el-text>
       </div>
       <!--      菜单-->
       <el-menu
@@ -19,7 +17,7 @@
         :default-active="activeIndex"
         router
         mode="vertical"
-        style="width: 100%"
+        style="width: 100%; border-right: 0"
         @select="handleSelect"
       >
         <!--        菜单按钮-->
@@ -27,10 +25,22 @@
           <el-icon>
             <Component :is="item.icon"></Component>
           </el-icon>
-          <h3>{{ item.name }}</h3>
+          <h4 style="letter-spacing: 1px">{{ item.name }}</h4>
         </el-menu-item>
       </el-menu>
-      <el-text class="aside-bottom">成为班主任：{{ class_teacher_day }}天</el-text>
+      <!--      aside的底部布局-->
+      <div class="aside-bottom">
+        <el-text>天气：多云</el-text>
+        <br />
+        <el-text>日期：2024-07-29</el-text>
+        <br />
+        <el-text>时间：12:53</el-text>
+        <br />
+        <div style="background-color: #38b2ff; width: 100%; height: 1px; margin-top: 30px"></div>
+        <div style="text-align: center; color: #515c67">
+          <h6>成为班主任：{{ class_teacher_day }}天</h6>
+        </div>
+      </div>
     </div>
     <!--    右边容器-->
     <div class="main">
@@ -46,32 +56,37 @@ let menu_list = [
   {
     index: '/',
     name: '主页',
-    icon: 'Monitor'
+    icon: 'DataAnalysis'
   },
   {
     index: '/about',
-    name: '日志',
-    icon: 'Monitor'
+    name: '班级日志',
+    icon: 'Notebook'
   },
   {
     index: '3',
-    name: '待办',
-    icon: 'Monitor'
+    name: '待办事项',
+    icon: 'Files'
   },
   {
     index: '4',
     name: '成长档案',
-    icon: 'Monitor'
+    icon: 'Document'
   },
   {
     index: '5',
     name: '班级活动',
-    icon: 'Monitor'
+    icon: 'Coordinate'
   },
   {
     index: '6',
-    name: '奖惩',
-    icon: 'Monitor'
+    name: '学生奖惩',
+    icon: 'Lollipop'
+  },
+  {
+    index: '7',
+    name: '设置',
+    icon: 'Setting'
   }
 ]
 // 设置默认路由页面
@@ -84,15 +99,40 @@ const handleSelect = (key, keyPath) => {
 </script>
 
 <style lang="scss" scoped>
+/*菜单焦点样式*/
+.el-menu-item:hover {
+  background-color: #e4f0fd !important;
+  color: #38b2ff !important;
+}
+
+/*菜单选中样式开始*/
+.el-menu-item.is-active {
+  border-left: #33a2ef solid 6px !important;
+  background-color: #e2eff9 !important;
+  color: #38b2ff !important;
+  font-weight: bolder;
+}
+
+.aside-button.is-active h4 {
+  font-weight: bolder;
+}
+
+/*菜单选中样式结束*/
+
 /*最外边容器的样式*/
 .container {
   width: 100vw;
   height: 100vh;
+  background-color: #f2f2f2;
   display: flex;
+  color: black;
   /*左边容器的样式*/
   .aside {
-    flex: 2;
+    flex: 1.9;
+    min-width: 140px;
+    max-width: 150px;
     position: relative;
+    padding: 5px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -103,26 +143,35 @@ const handleSelect = (key, keyPath) => {
       width: 100%;
       display: flex;
       flex-direction: row;
-      padding: 10px;
+      padding-left: 5px;
+      padding-bottom: 30px;
+      padding-top: 10px;
       justify-content: space-between;
     }
 
     /*aside的底部样式*/
     .aside-bottom {
       position: absolute;
-      margin-bottom: 10px;
+      text-align: start;
+      width: 100%;
       bottom: 0;
+
+      .el-text {
+        margin-left: 8px;
+      }
     }
 
     /*菜单按按钮样式*/
     .aside-button {
-      margin: 5px;
+      box-sizing: border-box;
+      margin-top: 1em;
       border-radius: 5px;
-      border: 2px solid aquamarine;
+      background-color: #ffffff;
+      /*border: 2px solid aquamarine;*/
       display: flex;
       flex-direction: row;
       justify-content: start;
-      height: 45px;
+      height: 40px;
     }
   }
 

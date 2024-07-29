@@ -1,13 +1,9 @@
 <template>
   <div>
-<h1>guanyu8</h1>
+    <h1>guanyu8</h1>
   </div>
 </template>
 
-<script setup>
+<script setup></script>
 
-</script>
-
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>
