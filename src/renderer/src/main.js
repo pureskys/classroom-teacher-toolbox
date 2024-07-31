@@ -1,6 +1,7 @@
 import './assets/main.css'
 import 'element-plus/dist/index.css'
-
+// 引入和风天气图标
+import 'qweather-icons/font/qweather-icons.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router/index.js'

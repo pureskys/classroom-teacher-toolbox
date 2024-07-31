@@ -23,8 +23,10 @@
     "@element-plus/icons-vue": "^2.3.1",
     "electron-updater": "^6.1.7",
     "element-plus": "^2.7.8",
+    "qweather-icons": "^1.6.0",
     "sass": "^1.77.8",
-    "vue-router": "^4.4.0"
+    "vue-router": "^4.4.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.2",
