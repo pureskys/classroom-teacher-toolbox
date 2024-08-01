@@ -1,6 +1,8 @@
 <template>
   <div class="home-container">
-    <h1>我是主页</h1>
+    <el-scrollbar>
+      <h1>我是主页</h1>
+    </el-scrollbar>
   </div>
 </template>
 

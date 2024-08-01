@@ -1,70 +1,79 @@
 <template>
   <!--  最外边容器-->
   <div class="container">
-    <el-scrollbar>
-      <!--    左边容器-->
-      <div class="aside">
-        <!--      标题展示块-->
-        <div class="aside-header">
-          <el-avatar :src="icon_cut" fit="cover" shape="square" size="large"></el-avatar>
-          <el-text type="primary" style="font-size: 1.5em; font-weight: bold; letter-spacing: 4px"
-            >CTT
-          </el-text>
-        </div>
-        <!--      菜单-->
-        <el-menu
-          v-for="item in menu_list"
-          :key="item.index"
-          :default-active="activeIndex"
-          router
-          mode="vertical"
-          style="width: 100%; border-right: 0"
-          @select="handleSelect"
+    <!--    左边容器-->
+    <div class="aside">
+      <el-scrollbar style="flex: 1">
+        <div
+          style="
+            margin: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 98.5vh;
+          "
         >
-          <!--        菜单按钮-->
-          <el-menu-item :index="item.index" class="aside-button">
-            <el-icon>
-              <Component :is="item.icon"></Component>
-            </el-icon>
-            <h4 style="letter-spacing: 1px">{{ item.name }}</h4>
-          </el-menu-item>
-        </el-menu>
-        <!--      aside的底部布局-->
-        <div class="aside-bottom">
-          <!--        天气组件-->
-          <div class="aside-bottom-weather">
-            <div><i class="qi-100" style="font-size: 25px; color: white"></i></div>
-            <div>
-              <el-text size="large" style="color: white">30℃</el-text>
-              <span style="display: inline-block; width: 12px"></span>
-              <el-text size="large" style="color: white">晴天</el-text>
+          <!--      标题展示块-->
+          <div class="aside-header">
+            <el-avatar :src="icon_cut" fit="cover" shape="square" size="large"></el-avatar>
+            <el-text type="primary" style="font-size: 1.5em; font-weight: bold; letter-spacing: 4px"
+              >CTT
+            </el-text>
+          </div>
+          <!--      菜单-->
+          <el-menu
+            v-for="item in menu_list"
+            :key="item.index"
+            :default-active="activeIndex"
+            router
+            mode="vertical"
+            style="width: 100%; border-right: 0"
+            @select="handleSelect"
+          >
+            <!--        菜单按钮-->
+            <el-menu-item :index="item.index" class="aside-button">
+              <el-icon>
+                <Component :is="item.icon"></Component>
+              </el-icon>
+              <h4 style="letter-spacing: 1px">{{ item.name }}</h4>
+            </el-menu-item>
+          </el-menu>
+          <!--      aside的底部布局-->
+          <div class="aside-bottom">
+            <!--        天气组件-->
+            <div class="aside-bottom-weather">
+              <div><i class="qi-100" style="font-size: 25px; color: white"></i></div>
+              <div>
+                <el-text size="large" style="color: white">30℃</el-text>
+                <span style="display: inline-block; width: 12px"></span>
+                <el-text size="large" style="color: white">晴天</el-text>
+              </div>
+            </div>
+            <!--        时间展板-->
+            <div
+              style="
+                border-radius: 10px;
+                background-color: #f38181;
+                padding: 5px;
+                margin: 5px 0 5px 0;
+              "
+            >
+              <el-text size="large" style="font-weight: bold; color: white">2024年7月</el-text>
+              <br />
+              <el-text size="large" style="font-size: 3em; font-weight: bolder; color: white"
+                >31
+              </el-text>
+              <br />
+              <el-text size="large" style="font-weight: bold; color: white">下午：1:21</el-text>
+            </div>
+            <!--        班主任日期显示-->
+            <div style="margin-bottom: 5px">
+              <el-tag type="success">已成为班主任：{{ class_teacher_day }} 天</el-tag>
             </div>
           </div>
-          <!--        时间展板-->
-          <div
-            style="
-              border-radius: 10px;
-              background-color: #f4df9a;
-              padding: 5px;
-              margin: 5px 0 5px 0;
-            "
-          >
-            <el-text size="large" style="font-weight: bold; color: white">2024年7月</el-text>
-            <br />
-            <el-text size="large" style="font-size: 3em; font-weight: bolder; color: white"
-              >31</el-text
-            >
-            <br />
-            <el-text size="large" style="font-weight: bold; color: white">下午：1:21</el-text>
-          </div>
-          <!--        班主任日期显示-->
-          <div>
-            <el-tag type="success">已成为班主任：{{ class_teacher_day }} 天</el-tag>
-          </div>
-          <div style="flex: 0"></div>
         </div>
-      </div>
-    </el-scrollbar>
+      </el-scrollbar>
+    </div>
 
     <!--    右边容器-->
     <div class="main">
@@ -127,16 +136,16 @@ const handleSelect = (key, keyPath) => {
 <style lang="scss" scoped>
 /*菜单焦点样式*/
 .el-menu-item:hover {
-  background-color: #e4f0fd !important;
-  color: #38b2ff !important;
+  background-color: #a8d8ea !important;
+  color: white !important;
 }
 
 /*菜单选中样式开始*/
 .el-menu-item.is-active {
-  border-left: #33a2ef solid 6px !important;
-  background-color: #e2eff9 !important;
-  color: #38b2ff !important;
-  font-weight: bolder;
+  transition: border-left-width 0.2s;
+  border-left: #267b7e solid 6px !important;
+  background-color: #3fc1c9 !important;
+  color: white !important;
 }
 
 .aside-button.is-active h4 {
@@ -149,23 +158,19 @@ const handleSelect = (key, keyPath) => {
 .container {
   width: 100vw;
   height: 100vh;
-  background-color: #f2f2f2;
+  background-color: #e2e1e4;
   display: flex;
   color: black;
   /*左边容器的样式*/
   .aside {
-    flex: 1.9;
-    height: 100vh;
-    justify-content: space-around;
-    min-width: 145px;
-    max-width: 150px;
-    position: relative;
-    padding: 5px;
+    flex: 2;
+    min-width: 144px;
+    max-width: 155px;
     display: flex;
-    flex-direction: column;
+    height: 100%;
     align-items: center;
     border-radius: 5px;
-    background-color: #ffffff;
+    background-color: white;
     /*aside的标题展示块*/
     .aside-header {
       width: 100%;
@@ -194,7 +199,7 @@ const handleSelect = (key, keyPath) => {
         padding: 6px;
         align-items: center;
         justify-content: space-around;
-        background-color: #abd1f4;
+        background-color: #00b8a9;
         flex: 0;
         text-align: center;
         margin-top: 2px;
