@@ -50,14 +50,7 @@
               </div>
             </div>
             <!--        时间展板-->
-            <div
-              style="
-                border-radius: 10px;
-                background-color: #f38181;
-                padding: 5px;
-                margin: 5px 0 5px 0;
-              "
-            >
+            <div class="aside-bottom-time">
               <el-text size="large" style="font-weight: bold; color: white">2024年7月</el-text>
               <br />
               <el-text size="large" style="font-size: 3em; font-weight: bolder; color: white"
@@ -191,7 +184,7 @@ const handleSelect = (key, keyPath) => {
       text-align: center;
       width: 100%;
       height: 100%;
-
+      /*aside天气展板*/
       .aside-bottom-weather {
         display: flex;
         border-radius: 12px;
@@ -203,6 +196,14 @@ const handleSelect = (key, keyPath) => {
         flex: 0;
         text-align: center;
         margin-top: 2px;
+      }
+
+      /*aside时间展板*/
+      .aside-bottom-time {
+        border-radius: 10px;
+        background-color: #f38181;
+        padding: 5px;
+        margin: 5px 0 5px 0;
       }
 
       /* .el-text {
