@@ -1,7 +1,9 @@
 <template>
   <div class="home-container">
-    <el-scrollbar>
-      <div class="flex text-gray-600 hover:text-gray-300">{{ hitokoto }}</div>
+    <el-scrollbar style="display: flex; align-items: center; justify-content: center">
+      <div>
+        {{ hitokoto }}
+      </div>
     </el-scrollbar>
   </div>
 </template>
@@ -27,5 +29,6 @@ axios
 .home-container {
   width: 100%;
   height: 100%;
+  background-color: #3fc1c9;
 }
 </style>
