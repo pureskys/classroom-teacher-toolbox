@@ -13,10 +13,13 @@ function createWindow() {
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
+      // nodeIntegration: true,
+      // contextIsolation: false,
+      webSecurity: false,
       sandbox: false
     }
   })
-
+  mainWindow.setMenu(null) // 关闭菜单栏
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
   })

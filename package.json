@@ -1,6 +1,6 @@
 {
   "name": "classroom-teacher-toolbox",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An Electron application with Vue",
   "main": "./out/main/index.js",
   "author": "example.com",
@@ -21,6 +21,7 @@
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
     "@element-plus/icons-vue": "^2.3.1",
+    "axios": "^1.7.3",
     "electron-updater": "^6.1.7",
     "element-plus": "^2.7.8",
     "nedb": "^1.8.0",

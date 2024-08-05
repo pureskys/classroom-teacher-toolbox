@@ -51,13 +51,20 @@
             </div>
             <!--        时间展板-->
             <div class="aside-bottom-time">
-              <el-text size="large" style="font-weight: bold; color: white">2024年7月</el-text>
-              <br />
-              <el-text size="large" style="font-size: 3em; font-weight: bolder; color: white"
-                >31
+              <el-text size="large" style="font-weight: bold; color: white"
+                >{{ date_list.year }}年{{ date_list.month }}月
               </el-text>
               <br />
-              <el-text size="large" style="font-weight: bold; color: white">下午：1:21</el-text>
+              <el-text size="large" style="font-size: 3em; font-weight: bolder; color: white"
+                >{{ date_list.day }}
+              </el-text>
+              <br />
+              <el-text size="large" style="font-weight: bold; color: white">
+                <el-text size="large" style="font-weight: bold; color: white">
+                  {{ date_list.date12 }}
+                </el-text>
+                {{ date_list.hour + ':' + date_list.minute + ':' + date_list.second }}
+              </el-text>
             </div>
             <!--        班主任日期显示-->
             <div style="margin-bottom: 5px">
@@ -76,9 +83,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import icon_cut from '@renderer/assets/icons/cut.jpg'
-
+// 菜单选项list
 let menu_list = [
   {
     index: '/',
@@ -116,13 +123,52 @@ let menu_list = [
     icon: 'Setting'
   }
 ]
-// 设置默认路由页面
-const activeIndex = ref('/')
-// 班主任天数变量
-const class_teacher_day = 0
+
+const activeIndex = ref('/') // 设置默认路由页面
+const class_teacher_day = 0 // 班主任天数变量
+const date_list = ref({}) // 日期变量
+let timer = null // 定时器对象
+// 页面初始化完成之后函数区域
+onMounted(() => {
+  timer = setInterval(() => {
+    getDate()
+  }, 1000)
+})
+// 页面销毁前执行的函数
+onBeforeUnmount(() => {
+  clearTimeout(timer)
+  timer = null
+})
+// 菜单切换函数
 const handleSelect = (key, keyPath) => {
   activeIndex.value = key
   console.log(key, keyPath)
+}
+
+// 实时获取时间并渲染
+function getDate() {
+  const date = new Date() // 创建时间实例
+  let hour = date.getHours() //获取小时
+  let date12 //12小时制上下午变量
+  if (hour < 11) {
+    date12 = '上午'
+  } else if (hour > 13) {
+    date12 = '下午'
+  } else {
+    date12 = '中午'
+  }
+  if (hour >= 12) {
+    hour = hour - 12
+  }
+  date_list.value = {
+    date12: date12,
+    year: date.getFullYear(),
+    month: (date.getMonth() + 1).toString().padStart(2, '0'),
+    day: date.getDate().toString().padStart(2, '0'),
+    hour: hour.toString().padStart(2, '0'),
+    minute: date.getMinutes().toString().padStart(2, '0'),
+    second: new Date().getSeconds().toString().padStart(2, '0')
+  }
 }
 </script>
 
