@@ -1,7 +1,7 @@
 <template>
   <div class="home-container">
     <el-scrollbar>
-      <h1>{{ hitokoto }}</h1>
+      <div class="flex text-gray-600 hover:text-gray-300">{{ hitokoto }}</div>
     </el-scrollbar>
   </div>
 </template>

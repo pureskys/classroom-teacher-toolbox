@@ -1,6 +1,6 @@
 <template>
   <!--  最外边容器-->
-  <div class="container">
+  <div class="my-container">
     <!--    左边容器-->
     <div class="aside">
       <el-scrollbar style="flex: 1">
@@ -194,9 +194,7 @@ function getDate() {
 /*菜单选中样式结束*/
 
 /*最外边容器的样式*/
-.container {
-  width: 100vw;
-  height: 100vh;
+.my-container {
   background-color: #e2e1e4;
   display: flex;
   color: black;
