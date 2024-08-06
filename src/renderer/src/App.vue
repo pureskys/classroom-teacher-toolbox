@@ -41,33 +41,40 @@
           <!--      aside的底部布局-->
           <div class="aside-bottom">
             <!--        天气组件-->
-            <div v-if="weather_data" class="aside-bottom-weather">
-              <div>
-                <i :class="'qi-' + weather_data.now.icon" style="font-size: 26px; color: white"></i>
+            <transition name="el-fade-in-linear">
+              <div v-if="weather_data" class="aside-bottom-weather">
+                <div>
+                  <i
+                    :class="'qi-' + weather_data.now.icon"
+                    style="font-size: 26px; color: white"
+                  ></i>
+                </div>
+                <div>
+                  <el-text size="large" style="color: white">{{ weather_data.now.temp }}℃</el-text>
+                  <span style="display: inline-block; width: 12px"></span>
+                  <el-text size="large" style="color: white">{{ weather_data.now.text }}</el-text>
+                </div>
               </div>
-              <div>
-                <el-text size="large" style="color: white">{{ weather_data.now.temp }}℃</el-text>
-                <span style="display: inline-block; width: 12px"></span>
-                <el-text size="large" style="color: white">{{ weather_data.now.text }}</el-text>
-              </div>
-            </div>
+            </transition>
             <!--        时间展板-->
-            <div v-if="date_list" class="aside-bottom-time">
-              <el-text size="large" style="font-weight: bold; color: white"
-                >{{ date_list.year }}年{{ date_list.month }}月
-              </el-text>
-              <br />
-              <el-text size="large" style="font-size: 3em; font-weight: bolder; color: white"
-                >{{ date_list.day }}
-              </el-text>
-              <br />
-              <el-text size="large" style="font-weight: bold; color: white">
-                <el-text size="large" style="font-weight: bold; color: white">
-                  {{ date_list.date12 }}
+            <transition name="el-fade-in-linear">
+              <div v-if="date_list" class="aside-bottom-time">
+                <el-text size="large" style="font-weight: bold; color: white"
+                  >{{ date_list.year }}年{{ date_list.month }}月
                 </el-text>
-                {{ date_list.hour + ':' + date_list.minute + ':' + date_list.second }}
-              </el-text>
-            </div>
+                <br />
+                <el-text size="large" style="font-size: 3em; font-weight: bolder; color: white"
+                  >{{ date_list.day }}
+                </el-text>
+                <br />
+                <el-text size="large" style="font-weight: bold; color: white">
+                  <el-text size="large" style="font-weight: bold; color: white">
+                    {{ date_list.date12 }}
+                  </el-text>
+                  {{ date_list.hour + ':' + date_list.minute + ':' + date_list.second }}
+                </el-text>
+              </div>
+            </transition>
             <!--        班主任日期显示-->
             <div style="margin-bottom: 5px">
               <el-tag type="success">已成为班主任：{{ class_teacher_day }} 天</el-tag>
@@ -129,18 +136,17 @@ const menu_list = [
 
 const activeIndex = ref('/') // 设置默认路由页面
 const class_teacher_day = 0 // 班主任天数变量
-const date_list = ref() // 日期数据变量
+const date_list = ref(null) // 日期数据变量
 const weather_url = 'https://devapi.qweather.com/v7/weather/now' //天气请求的url
 const weather_location = ref('101251206') // 获取天气的地址
 const weather_key = '903c529f31b8404c9b6c54b96253be43' // 天气请求key
-let weather_data // 天气数据
+let weather_data = ref(null) // 天气数据
 let timer = null // 定时器对象
 
 // 页面初始化完成之后函数区域
 onMounted(async () => {
   // 请求天气
-  weather_data = ref(await getWeather(weather_url, weather_location, weather_key))
-  console.log(weather_data.value)
+  weather_data.value = await getWeather(weather_url, weather_location, weather_key)
   // 设置时钟定时器
   timer = setInterval(() => {
     getDate()
