@@ -1,10 +1,10 @@
 <template>
-  <div class="home-container">
-    <el-scrollbar style="display: flex; align-items: center; justify-content: center">
-      <div>
-        {{ hitokoto }}
-      </div>
-    </el-scrollbar>
+  <div class="flex flex-1 flex-col bg-red-200 p-1">
+    <div class="flex flex-1 bg-green-200">
+      <div class="flex w-5/6 bg-amber-200"></div>
+      <div class="flex w-1/6 bg-green-100"></div>
+    </div>
+    <div class="flex flex-1 bg-red-300"></div>
   </div>
 </template>
 
@@ -27,8 +27,10 @@ axios
 
 <style lang="scss" scoped>
 .home-container {
-  width: 100%;
-  height: 100%;
+  flex-direction: column;
+  display: flex;
+  flex: 1;
   background-color: #3fc1c9;
+  padding: 10px;
 }
 </style>

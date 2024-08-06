@@ -41,16 +41,18 @@
           <!--      aside的底部布局-->
           <div class="aside-bottom">
             <!--        天气组件-->
-            <div class="aside-bottom-weather">
-              <div><i class="qi-100" style="font-size: 25px; color: white"></i></div>
+            <div v-if="weather_data" class="aside-bottom-weather">
               <div>
-                <el-text size="large" style="color: white">30℃</el-text>
+                <i :class="'qi-' + weather_data.now.icon" style="font-size: 26px; color: white"></i>
+              </div>
+              <div>
+                <el-text size="large" style="color: white">{{ weather_data.now.temp }}℃</el-text>
                 <span style="display: inline-block; width: 12px"></span>
-                <el-text size="large" style="color: white">晴天</el-text>
+                <el-text size="large" style="color: white">{{ weather_data.now.text }}</el-text>
               </div>
             </div>
             <!--        时间展板-->
-            <div class="aside-bottom-time">
+            <div v-if="date_list" class="aside-bottom-time">
               <el-text size="large" style="font-weight: bold; color: white"
                 >{{ date_list.year }}年{{ date_list.month }}月
               </el-text>
@@ -85,8 +87,9 @@
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import icon_cut from '@renderer/assets/icons/cut.jpg'
+import axios from 'axios'
 // 菜单选项list
-let menu_list = [
+const menu_list = [
   {
     index: '/',
     name: '主页',
@@ -126,19 +129,59 @@ let menu_list = [
 
 const activeIndex = ref('/') // 设置默认路由页面
 const class_teacher_day = 0 // 班主任天数变量
-const date_list = ref({}) // 日期变量
+const date_list = ref() // 日期数据变量
+const weather_url = 'https://devapi.qweather.com/v7/weather/now' //天气请求的url
+const weather_location = ref('101251206') // 获取天气的地址
+const weather_key = '903c529f31b8404c9b6c54b96253be43' // 天气请求key
+let weather_data // 天气数据
 let timer = null // 定时器对象
+
 // 页面初始化完成之后函数区域
-onMounted(() => {
+onMounted(async () => {
+  // 请求天气
+  weather_data = ref(await getWeather(weather_url, weather_location, weather_key))
+  console.log(weather_data.value)
+  // 设置时钟定时器
   timer = setInterval(() => {
     getDate()
   }, 1000)
 })
+
 // 页面销毁前执行的函数
 onBeforeUnmount(() => {
   clearTimeout(timer)
   timer = null
 })
+
+// 请求天气接口
+function getWeather(url, location, key) {
+  return new Promise((resolve) => {
+    const params = {
+      location: location.value,
+      key: key
+    }
+    axios
+      .get(url, { params })
+      .then((response) => {
+        console.log('返回的天气数据', response.data)
+        try {
+          const code = response.data.code
+          if (code === '200') {
+            resolve(response.data)
+          } else {
+            resolve(false)
+          }
+        } catch (err) {
+          resolve(false)
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+        resolve(false)
+      })
+  })
+}
+
 // 菜单切换函数
 const handleSelect = (key, keyPath) => {
   activeIndex.value = key
@@ -150,13 +193,25 @@ function getDate() {
   const date = new Date() // 创建时间实例
   let hour = date.getHours() //获取小时
   let date12 //12小时制上下午变量
-  if (hour < 11) {
+  if (hour >= 0 && hour < 3) {
+    date12 = '拂晓'
+  } else if (hour >= 3 && hour < 6) {
+    date12 = '黎明'
+  } else if (hour >= 6 && hour < 9) {
+    date12 = '清晨'
+  } else if (hour >= 9 && hour < 12) {
     date12 = '上午'
-  } else if (hour > 13) {
-    date12 = '下午'
-  } else {
+  } else if (hour >= 12 && hour < 15) {
     date12 = '中午'
+  } else if (hour >= 15 && hour < 18) {
+    date12 = '下午'
+  } else if (hour >= 18 && hour < 21) {
+    date12 = '傍晚'
+  } else {
+    //考虑小时数大于等于21且小于等于23的情况
+    date12 = '深夜'
   }
+
   if (hour >= 12) {
     hour = hour - 12
   }
@@ -272,6 +327,7 @@ function getDate() {
   /*右边容器的样式*/
   .main {
     flex: 14;
+    display: flex;
   }
 }
 </style>
