@@ -42,7 +42,11 @@
           <div class="aside-bottom">
             <!--        天气组件-->
             <transition name="el-fade-in-linear">
-              <div v-if="weather_data" class="aside-bottom-weather">
+              <div
+                v-if="weather_data"
+                class="aside-bottom-weather"
+                @click="is_show_dialog_weather = true"
+              >
                 <div>
                   <i
                     :class="'qi-' + weather_data.now.icon"
@@ -89,12 +93,20 @@
       <router-view></router-view>
     </div>
   </div>
+  <!--  地区选择弹出组件-->
+
+  <el-dialog v-model="is_show_dialog_weather" center width="30%">
+    <span>请选择地区:</span>
+    <China_Area v-model="is_show_dialog_weather"></China_Area>
+  </el-dialog>
 </template>
 
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import icon_cut from '@renderer/assets/icons/cut.jpg'
 import axios from 'axios'
+import China_Area from '@renderer/components/china-area-cascader.vue'
+
 // 菜单选项list
 const menu_list = [
   {
@@ -133,7 +145,6 @@ const menu_list = [
     icon: 'Setting'
   }
 ]
-
 const activeIndex = ref('/') // 设置默认路由页面
 const class_teacher_day = 0 // 班主任天数变量
 const date_list = ref(null) // 日期数据变量
@@ -142,6 +153,7 @@ const weather_location = ref('101251206') // 获取天气的地址
 const weather_key = '903c529f31b8404c9b6c54b96253be43' // 天气请求key
 let weather_data = ref(null) // 天气数据
 let timer = null // 定时器对象
+const is_show_dialog_weather = ref(false)
 
 // 页面初始化完成之后函数区域
 onMounted(async () => {
@@ -155,6 +167,7 @@ onMounted(async () => {
 
 // 页面销毁前执行的函数
 onBeforeUnmount(() => {
+  // 销毁定时器
   clearTimeout(timer)
   timer = null
 })
