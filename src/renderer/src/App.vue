@@ -41,25 +41,40 @@
           <!--      aside的底部布局-->
           <div class="aside-bottom">
             <!--        天气组件-->
-            <transition name="el-fade-in-linear">
-              <div
-                v-if="weather_data"
-                class="aside-bottom-weather"
-                @click="is_show_dialog_weather = true"
-              >
-                <div>
-                  <i
-                    :class="'qi-' + weather_data.now.icon"
-                    style="font-size: 26px; color: white"
-                  ></i>
+            <div>
+              <transition name="el-fade-in-linear">
+                <div
+                  v-if="weather_data"
+                  class="aside-bottom-weather"
+                  @click="is_show_dialog_weather = true"
+                >
+                  <div>
+                    <i
+                      :class="'qi-' + weather_data.now.icon"
+                      style="font-size: 26px; color: white"
+                    ></i>
+                  </div>
+                  <div>
+                    <el-text size="large" style="color: white"
+                      >{{ weather_data.now.temp }}℃
+                    </el-text>
+                    <span style="display: inline-block; width: 12px"></span>
+                    <el-text size="large" style="color: white">{{ weather_data.now.text }}</el-text>
+                  </div>
                 </div>
-                <div>
-                  <el-text size="large" style="color: white">{{ weather_data.now.temp }}℃</el-text>
-                  <span style="display: inline-block; width: 12px"></span>
-                  <el-text size="large" style="color: white">{{ weather_data.now.text }}</el-text>
+              </transition>
+              <transition name="el-fade-in-linear">
+                <div
+                  v-if="!weather_data"
+                  class="aside-bottom-weather"
+                  @click="is_show_dialog_weather = true"
+                >
+                  <div>
+                    <el-text size="large" style="color: white">获取失败</el-text>
+                  </div>
                 </div>
-              </div>
-            </transition>
+              </transition>
+            </div>
             <!--        时间展板-->
             <transition name="el-fade-in-linear">
               <div v-if="date_list" class="aside-bottom-time">
@@ -95,9 +110,12 @@
   </div>
   <!--  地区选择弹出组件-->
 
-  <el-dialog v-model="is_show_dialog_weather" center width="30%">
+  <el-dialog v-model="is_show_dialog_weather" center width="30%" @close="weatherDialogClose">
     <span>请选择地区:</span>
-    <China_Area v-model="is_show_dialog_weather"></China_Area>
+    <China_Area
+      v-model:is_dialog="is_show_dialog_weather"
+      localstorage_name="weather_area"
+    ></China_Area>
   </el-dialog>
 </template>
 
@@ -153,16 +171,19 @@ const weather_location = ref('101251206') // 获取天气的地址
 const weather_key = '903c529f31b8404c9b6c54b96253be43' // 天气请求key
 let weather_data = ref(null) // 天气数据
 let timer = null // 定时器对象
-const is_show_dialog_weather = ref(false)
+const is_show_dialog_weather = ref(false) // 天气dialog控制变量
+let weather_location_name //地区名字
 
 // 页面初始化完成之后函数区域
 onMounted(async () => {
-  // 请求天气
-  weather_data.value = await getWeather(weather_url, weather_location, weather_key)
   // 设置时钟定时器
   timer = setInterval(() => {
     getDate()
   }, 1000)
+  // 获取天气LocationId
+  weather_location.value = await getWeatherLocationId()
+  // 请求天气
+  weather_data.value = await getWeather(weather_url, weather_location, weather_key)
 })
 
 // 页面销毁前执行的函数
@@ -171,6 +192,57 @@ onBeforeUnmount(() => {
   clearTimeout(timer)
   timer = null
 })
+
+// 天气dialog关闭回调函数
+const weatherDialogClose = async () => {
+  try {
+    const weather_location_name_list = JSON.parse(localStorage.getItem('weather_area'))
+    const weather_location_name_0 =
+      weather_location_name_list[weather_location_name_list.length - 1]
+    if (weather_location_name === weather_location_name_0) {
+      console.log('地区位置不变，不请求天气api')
+    } else {
+      // 获取天气LocationId
+      weather_location.value = await getWeatherLocationId()
+      // 请求天气
+      weather_data.value = await getWeather(weather_url, weather_location, weather_key)
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+// 获取地区location_id
+function getWeatherLocationId() {
+  return new Promise((resolve) => {
+    try {
+      const weather_location_name_list = JSON.parse(localStorage.getItem('weather_area'))
+      weather_location_name = weather_location_name_list[weather_location_name_list.length - 1]
+      const params = {
+        location: weather_location_name,
+        key: weather_key
+      }
+      try {
+        axios
+          .get('https://geoapi.qweather.com/v2/city/lookup', { params })
+          .then((res) => {
+            console.log('获取天气地区id成功：', res.data.location[0].id)
+            resolve(res.data.location[0].id)
+          })
+          .catch((err) => {
+            console.log('获取天气地区id失败（地区id网络请求失败0）', err)
+            resolve('1010100')
+          })
+      } catch (err) {
+        console.log('获取天气地区id失败（地区id网络请求失败1）', err)
+        resolve('1010100')
+      }
+    } catch (e) {
+      console.log('获取天气地址失败,天气组件不加载')
+      resolve('1010100')
+    }
+  })
+}
 
 // 请求天气接口
 function getWeather(url, location, key) {
@@ -188,14 +260,17 @@ function getWeather(url, location, key) {
           if (code === '200') {
             resolve(response.data)
           } else {
+            localStorage.removeItem('weather_area')
             resolve(false)
           }
         } catch (err) {
+          localStorage.removeItem('weather_area')
           resolve(false)
         }
       })
       .catch((err) => {
         console.log(err)
+        localStorage.removeItem('weather_area')
         resolve(false)
       })
   })
