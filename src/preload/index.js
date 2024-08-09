@@ -1,13 +1,17 @@
 import { contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+
 import fs from 'fs'
 import { join } from 'path'
 import nedb from 'nedb'
+import xlsx from 'xlsx'
+
 // Custom APIs for renderer
 const api = {
   fs: fs,
   join: join,
-  nedb: nedb
+  nedb: nedb,
+  xlsx: xlsx
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
