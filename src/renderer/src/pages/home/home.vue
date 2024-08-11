@@ -2,34 +2,7 @@
   <div class="flex flex-1 flex-col">
     <div class="flex h-2/6">
       <!--      总人数卡片布局-->
-      <div
-        class="m-2 flex h-1/2 w-1/6 min-w-fit flex-col rounded-xl border border-gray-200 bg-white p-2"
-      >
-        <!--        总人数上边布局-->
-        <div class="flex justify-between">
-          <span class="ml-2 text-sm font-semibold text-slate-500 lg:text-base">总人数</span>
-          <!--          上边的右边布局-->
-          <div class="flex flex-1 flex-row justify-around space-x-2">
-            <div class="ml-2 flex flex-1 items-center justify-center space-x-2 rounded-3xl">
-              <div class="h-3 w-3 rounded-3xl bg-blue-300"></div>
-              <el-text>男</el-text>
-            </div>
-            <div class="flex flex-1 items-center justify-center space-x-2 rounded-3xl">
-              <div class="h-3 w-3 rounded-3xl bg-pink-300"></div>
-              <el-text>女</el-text>
-            </div>
-          </div>
-        </div>
-        <!--        分割线-->
-        <div class="ml-2 h-1 w-10 rounded-xl bg-green-300"></div>
-        <!--        总人数下边布局-->
-        <div class="flex flex-1 pl-2.5">
-          <div class="flex flex-1 items-center justify-center">
-            <el-text style="font-weight: bold; font-size: 2.6rem">46</el-text>
-            <div ref="all_students_chart" class="h-full w-full"></div>
-          </div>
-        </div>
-      </div>
+      <TopDataCard v-model:chart_data="all_students_chart_data"></TopDataCard>
     </div>
     <div class="flex h-4/6 bg-red-400">asdas</div>
     <!--    上传文件dialog-->
@@ -74,17 +47,17 @@
 
 <script setup>
 import { UploadFilled } from '@element-plus/icons-vue'
-import { nextTick, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { genFileId } from 'element-plus'
-import * as echarts from 'echarts'
-const Xlsx = require('xlsx')
+import TopDataCard from '@renderer/pages/home/components/topDateCard.vue'
+
+const Xlsx = require('xlsx') // 导入xlsx工具
 
 const is_show_dialog_upload = ref(true) // 弹窗状态控制
 const is_upload_button = ref(true) //禁用上传按钮状态
 const upload = ref() //文件暂存地址
 const file_path = ref() //文件路径
 const jsonData = ref() //获取的excel——to——json
-const all_students_chart = ref() // 总人数饼状图响应式绑定
 // 总人数饼状图数据
 const all_students_chart_data = {
   tooltip: {
@@ -108,17 +81,7 @@ const all_students_chart_data = {
   ]
 }
 
-onMounted(async () => {
-  await nextTick()
-  drawEcharts()
-})
-const drawEcharts = () => {
-  const all_students_chart1 = echarts.init(all_students_chart.value)
-  all_students_chart1.setOption(all_students_chart_data)
-  window.addEventListener('resize', () => {
-    all_students_chart1.resize()
-  })
-}
+onMounted(async () => {})
 
 // 文件状态改变时调用
 const handleChange = (file) => {
