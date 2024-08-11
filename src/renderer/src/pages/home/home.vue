@@ -25,7 +25,7 @@
         <!--        总人数下边布局-->
         <div class="flex flex-1 pl-2.5">
           <div class="flex flex-1 items-center justify-center">
-            <el-text style="font-weight: bold; font-size: 2.5rem">46</el-text>
+            <el-text style="font-weight: bold; font-size: 2.6rem">46</el-text>
             <div ref="all_students_chart" class="h-full w-full"></div>
           </div>
         </div>
@@ -78,11 +78,13 @@ import { nextTick, onMounted, ref } from 'vue'
 import { genFileId } from 'element-plus'
 import * as echarts from 'echarts'
 
-const is_show_dialog_upload = ref(false) // 弹窗状态控制
+const is_show_dialog_upload = ref(true) // 弹窗状态控制
 const is_upload_button = ref(true) //禁用上传按钮状态
 const upload = ref() //文件暂存地址
 const file_path = ref() //文件路径
 const jsonData = ref() //获取的excel——to——json
+const all_students_chart = ref() // 总人数饼状图响应式绑定
+// 总人数饼状图数据
 const all_students_chart_data = {
   tooltip: {
     trigger: 'item'
@@ -91,7 +93,7 @@ const all_students_chart_data = {
     {
       name: '总人数：',
       type: 'pie',
-      radius: ['40%', '80%'],
+      radius: ['40%', '82%'],
       avoidLabelOverlap: true,
       label: {
         show: false,
@@ -104,7 +106,6 @@ const all_students_chart_data = {
     }
   ]
 }
-const all_students_chart = ref()
 
 onMounted(async () => {
   await nextTick()
@@ -156,9 +157,6 @@ const submitUpload = () => {
     upload.value.clearFiles()
     is_show_dialog_upload.value = false
     console.log('获取的excel数据', jsonData.value)
-    window.electron.ipcRenderer.invoke('getMongoDb', (db) => {
-      console.log('获取db', db)
-    })
   } catch (e) {
     console.log('上传文件失败', e)
   }
