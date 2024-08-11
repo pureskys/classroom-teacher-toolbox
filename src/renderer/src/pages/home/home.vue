@@ -1,15 +1,28 @@
 <template>
-  <div class="flex flex-1 items-center justify-center bg-red-200">
-    <el-scrollbar>
-      <div>{{ jsonData }}</div>
-    </el-scrollbar>
+  <div class="flex flex-1 flex-col">
+    <div class="flex h-2/6">
+      <!--      总人数卡片布局-->
+      <div
+        class="m-2 flex h-1/2 w-1/6 min-w-fit flex-col rounded-xl border border-gray-200 bg-white p-2"
+      >
+        <!--        总人数上边布局-->
+        <div class="flex">
+          <span class="ml-2 text-sm font-semibold text-slate-500 lg:text-base">总人数</span>
+        </div>
+        <!--        分割线-->
+        <div class="ml-2 h-1 w-10 rounded-xl bg-green-300"></div>
+        <!--        总人数下边布局-->
+        <div class="flex flex-1">
+          <div class="flex flex-1 items-center justify-center">
+            <div class="text-4xl text-black">46</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flex h-4/6 bg-red-400">asdas</div>
     <!--    上传文件dialog-->
-    <el-dialog
-      v-model="is_show_dialog_upload"
-      center
-      class="flex flex-1 items-center justify-center"
-    >
-      <div class="flex flex-1 flex-row items-stretch">
+    <el-dialog v-model="is_show_dialog_upload" :close-on-click-modal="false" center>
+      <div class="flex flex-row items-stretch justify-center">
         <el-upload
           ref="upload"
           drag
@@ -52,7 +65,7 @@ import { UploadFilled } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 import { genFileId } from 'element-plus'
 
-const is_show_dialog_upload = ref(true)
+const is_show_dialog_upload = ref(false) // 弹窗状态控制
 const is_upload_button = ref(true) //禁用上传按钮状态
 const upload = ref() //文件暂存地址
 const file_path = ref() //文件路径
@@ -92,10 +105,13 @@ const submitUpload = () => {
     console.log('点击上传时的路径：', file_path.value)
     const workbook = window.api.xlsx.readFile(file_path.value)
     const worksheet = workbook.Sheets[workbook.SheetNames[0]]
-    jsonData.value = window.api.xlsx.utils.sheet_to_json(worksheet, { header: 1 })
+    jsonData.value = window.api.xlsx.utils.sheet_to_json(worksheet)
     upload.value.clearFiles()
     is_show_dialog_upload.value = false
     console.log('获取的excel数据', jsonData.value)
+    window.electron.ipcRenderer.invoke('getMongoDb', (db) => {
+      console.log('获取db', db)
+    })
   } catch (e) {
     console.log('上传文件失败', e)
   }
