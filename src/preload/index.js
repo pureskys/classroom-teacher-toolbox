@@ -1,18 +1,8 @@
 import { contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
-import fs from 'fs'
-import { join } from 'path'
-import nedb from 'nedb'
-import xlsx from 'xlsx'
-
 // Custom APIs for renderer
-const api = {
-  fs: fs,
-  join: join,
-  nedb: nedb,
-  xlsx: xlsx
-}
+const api = {}
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise

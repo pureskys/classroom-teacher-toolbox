@@ -77,6 +77,7 @@ import { UploadFilled } from '@element-plus/icons-vue'
 import { nextTick, onMounted, ref } from 'vue'
 import { genFileId } from 'element-plus'
 import * as echarts from 'echarts'
+const Xlsx = require('xlsx')
 
 const is_show_dialog_upload = ref(true) // 弹窗状态控制
 const is_upload_button = ref(true) //禁用上传按钮状态
@@ -151,9 +152,9 @@ const handleExceed = (files) => {
 const submitUpload = () => {
   try {
     console.log('点击上传时的路径：', file_path.value)
-    const workbook = window.api.xlsx.readFile(file_path.value)
+    const workbook = Xlsx.readFile(file_path.value)
     const worksheet = workbook.Sheets[workbook.SheetNames[0]]
-    jsonData.value = window.api.xlsx.utils.sheet_to_json(worksheet)
+    jsonData.value = Xlsx.utils.sheet_to_json(worksheet)
     upload.value.clearFiles()
     is_show_dialog_upload.value = false
     console.log('获取的excel数据', jsonData.value)
