@@ -6,15 +6,27 @@
         class="m-2 flex h-1/2 w-1/6 min-w-fit flex-col rounded-xl border border-gray-200 bg-white p-2"
       >
         <!--        总人数上边布局-->
-        <div class="flex">
+        <div class="flex justify-between">
           <span class="ml-2 text-sm font-semibold text-slate-500 lg:text-base">总人数</span>
+          <!--          上边的右边布局-->
+          <div class="flex flex-1 flex-row justify-around space-x-2">
+            <div class="ml-2 flex flex-1 items-center justify-center space-x-2 rounded-3xl">
+              <div class="h-3 w-3 rounded-3xl bg-blue-300"></div>
+              <el-text>男</el-text>
+            </div>
+            <div class="flex flex-1 items-center justify-center space-x-2 rounded-3xl">
+              <div class="h-3 w-3 rounded-3xl bg-pink-300"></div>
+              <el-text>女</el-text>
+            </div>
+          </div>
         </div>
         <!--        分割线-->
         <div class="ml-2 h-1 w-10 rounded-xl bg-green-300"></div>
         <!--        总人数下边布局-->
-        <div class="flex flex-1">
+        <div class="flex flex-1 pl-2.5">
           <div class="flex flex-1 items-center justify-center">
-            <div class="text-4xl text-black">46</div>
+            <el-text style="font-weight: bold; font-size: 2.5rem">46</el-text>
+            <div ref="all_students_chart" class="h-full w-full"></div>
           </div>
         </div>
       </div>
@@ -62,14 +74,49 @@
 
 <script setup>
 import { UploadFilled } from '@element-plus/icons-vue'
-import { ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import { genFileId } from 'element-plus'
+import * as echarts from 'echarts'
 
 const is_show_dialog_upload = ref(false) // 弹窗状态控制
 const is_upload_button = ref(true) //禁用上传按钮状态
 const upload = ref() //文件暂存地址
 const file_path = ref() //文件路径
 const jsonData = ref() //获取的excel——to——json
+const all_students_chart_data = {
+  tooltip: {
+    trigger: 'item'
+  },
+  series: [
+    {
+      name: '总人数：',
+      type: 'pie',
+      radius: ['40%', '80%'],
+      avoidLabelOverlap: true,
+      label: {
+        show: false,
+        position: 'center'
+      },
+      data: [
+        { value: 20, name: '女生', itemStyle: { color: '#FFC0CB' } },
+        { value: 26, name: '男生', itemStyle: { color: '#ADD8E6' } }
+      ]
+    }
+  ]
+}
+const all_students_chart = ref()
+
+onMounted(async () => {
+  await nextTick()
+  drawEcharts()
+})
+const drawEcharts = () => {
+  const all_students_chart1 = echarts.init(all_students_chart.value)
+  all_students_chart1.setOption(all_students_chart_data)
+  window.addEventListener('resize', () => {
+    all_students_chart1.resize()
+  })
+}
 
 // 文件状态改变时调用
 const handleChange = (file) => {
