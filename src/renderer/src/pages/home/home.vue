@@ -1,9 +1,18 @@
 <template>
   <div class="flex flex-1 flex-col">
     <div class="flex h-2/6">
-      <!--      总人数卡片布局-->
-      <TopDataCard v-model:chart_data="all_students_chart_data"></TopDataCard>
-      <el-button @click="a">asdasd</el-button>
+      <!--      学生总人数卡片布局-->
+      <TopDataCard
+        card_name="学生数"
+        :chart_data="all_students_chart_data"
+        :count="students_count"
+      ></TopDataCard>
+      <!--      教师总人数卡片-->
+      <TopDataCard
+        card_name="教师数"
+        :chart_data="all_teachers_chart_data"
+        :count="teachers_count"
+      ></TopDataCard>
     </div>
     <div class="flex h-4/6 bg-red-400">asdas</div>
     <!--    上传文件dialog-->
@@ -64,17 +73,23 @@ const jsonData1 = ref() //获取的学生数据
 const jsonData2 = ref() //获取的教师数据
 const db_students = ref() //学生数据库
 const db_teachers = ref() //教师数据库
-// 总人数饼状图数据
+const students_count = ref(0) //学生总人数
+const teachers_count = ref(0) //教师总人数
+// 学生总人数饼状图数据
 const all_students_chart_data = ref({
   tooltip: {
     trigger: 'item'
   },
+  legend: {
+    left: '10%',
+    top: '0%'
+  },
   series: [
     {
-      name: '总人数：',
+      name: '学生数：',
       type: 'pie',
-      radius: ['40%', '82%'],
-      avoidLabelOverlap: true,
+      radius: ['40%', '85%'],
+      top: '25%',
       label: {
         show: false,
         position: 'center'
@@ -86,20 +101,72 @@ const all_students_chart_data = ref({
     }
   ]
 })
-
+//教师总人数饼状图数据
+const all_teachers_chart_data = ref({
+  tooltip: {
+    trigger: 'item'
+  },
+  legend: {
+    show: false
+  },
+  series: [
+    {
+      name: '教师数：',
+      type: 'pie',
+      radius: ['40%', '90%'],
+      label: {
+        show: false,
+        position: 'center'
+      },
+      data: []
+    }
+  ]
+})
+// 页面初始化函数
 onMounted(async () => {
   await connectToTheDb() //连接数据库
-  await nextTick()
-  await setStudentsCount()
+  await nextTick() //等待UI渲染
+  await setStudentsCount() // 设置学生数据
+  await setTeachersCount() // 设置教师数据
 })
 
-const a = () => {
-  all_students_chart_data.value.series[0].data[0].value = 2
-
-  console.log(all_students_chart_data.value)
+// 设置教师展示卡片数据
+const setTeachersCount = async () => {
+  let data_list = [] //初始化教师图表数据
+  let subject_list = []
+  // 获取教师总人数
+  teachers_count.value = await findDbData(db_teachers.value, 'count', {})
+  // 设置图表数据
+  let subject_data = await findDbData(db_teachers.value, 'find', { 学科: { $exists: true } })
+  await Promise.all(
+    subject_data.map((item) => {
+      return new Promise((resolve) => {
+        subject_list.push(item.学科)
+        resolve()
+      })
+    })
+  )
+  const unique_subjects_list = new Set(subject_list) // 使用 Set 来获取唯一的学科值
+  const unique_subjects_list_array = Array.from(unique_subjects_list) // 将Set对象转换为数组
+  await Promise.all(
+    unique_subjects_list_array.map(async (item) => {
+      let value1 = await findDbData(db_teachers.value, 'count', { 学科: item })
+      return new Promise((resolve) => {
+        let subject_data = {
+          value: value1,
+          name: item
+        }
+        data_list.push(subject_data)
+        resolve()
+      })
+    })
+  )
+  all_teachers_chart_data.value.series[0].data = data_list
 }
-
+// 设置学生展示卡片数据
 const setStudentsCount = async () => {
+  // 获取学生总人数
+  students_count.value = await findDbData(db_students.value, 'count', {})
   // 获取数据库男女人数
   all_students_chart_data.value.series[0].data[1].value = await findDbData(
     db_students.value,
@@ -129,9 +196,11 @@ const findDbData = async (db, key, params) => {
       if (key === 'find') {
         db.find(params, (err, docs) => {
           if (err) {
+            reject(err)
             console.error(err)
           } else {
             console.log(docs)
+            resolve(docs)
           }
         })
       } else if (key === 'count') {
