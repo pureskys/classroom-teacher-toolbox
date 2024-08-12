@@ -30,20 +30,30 @@
 </template>
 <script setup>
 import * as echarts from 'echarts'
-import { nextTick, onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 
 const chart_data = defineModel('chart_data', { required: true, type: Object }) // 必须传入组件的数据
 const myChart = ref()
+const myChart1 = ref()
 
 onMounted(async () => {
+  myChart1.value = echarts.init(myChart.value)
   await nextTick()
-  drawEcharts()
+  drawEcharts(chart_data.value)
 })
-const drawEcharts = () => {
-  const myChart1 = echarts.init(myChart.value)
-  myChart1.setOption(chart_data.value)
+watch(
+  chart_data,
+  () => {
+    console.log('监听到数据变化')
+    drawEcharts(chart_data.value)
+  },
+  { deep: true }
+)
+const drawEcharts = (data) => {
+  console.log('获取的图表数据：', data)
+  myChart1.value.setOption(data)
   window.addEventListener('resize', () => {
-    myChart1.resize()
+    myChart1.value.resize()
   })
 }
 </script>

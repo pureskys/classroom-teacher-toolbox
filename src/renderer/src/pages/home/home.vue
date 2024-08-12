@@ -3,6 +3,7 @@
     <div class="flex h-2/6">
       <!--      总人数卡片布局-->
       <TopDataCard v-model:chart_data="all_students_chart_data"></TopDataCard>
+      <el-button @click="a">asdasd</el-button>
     </div>
     <div class="flex h-4/6 bg-red-400">asdas</div>
     <!--    上传文件dialog-->
@@ -47,19 +48,23 @@
 
 <script setup>
 import { UploadFilled } from '@element-plus/icons-vue'
-import { onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 import { genFileId } from 'element-plus'
 import TopDataCard from '@renderer/pages/home/components/topDateCard.vue'
 
+const fs = require('fs')
+const nedb = require('nedb')
 const Xlsx = require('xlsx') // 导入xlsx工具
 
 const is_show_dialog_upload = ref(true) // 弹窗状态控制
 const is_upload_button = ref(true) //禁用上传按钮状态
 const upload = ref() //文件暂存地址
 const file_path = ref() //文件路径
-const jsonData = ref() //获取的excel——to——json
+const jsonData1 = ref() //获取的学生数据
+const jsonData2 = ref() //获取的教师数据
+const db_students = ref() //全局数据库
 // 总人数饼状图数据
-const all_students_chart_data = {
+const all_students_chart_data = ref({
   tooltip: {
     trigger: 'item'
   },
@@ -74,14 +79,111 @@ const all_students_chart_data = {
         position: 'center'
       },
       data: [
-        { value: 20, name: '女生', itemStyle: { color: '#FFC0CB' } },
-        { value: 26, name: '男生', itemStyle: { color: '#ADD8E6' } }
+        { value: 0, name: '女生', itemStyle: { color: '#FFC0CB' } },
+        { value: 0, name: '男生', itemStyle: { color: '#ADD8E6' } }
       ]
     }
   ]
+})
+
+onMounted(async () => {
+  await connectToTheDb('students')
+  await nextTick()
+  await setStudentsCount()
+})
+
+const a = () => {
+  all_students_chart_data.value.series[0].data[0].value = 2
+
+  console.log(all_students_chart_data.value)
 }
 
-onMounted(async () => {})
+const setStudentsCount = async () => {
+  // 获取数据库男女人数
+  all_students_chart_data.value.series[0].data[1].value = await findDbData(
+    db_students.value,
+    'count',
+    { 性别: '男' }
+  )
+  all_students_chart_data.value.series[0].data[0].value = await findDbData(
+    db_students.value,
+    'count',
+    { 性别: '女' }
+  )
+}
+//连接数据库
+const connectToTheDb = async (dbname) => {
+  let path = 'db/' + dbname + '.db'
+  // 连接数据库
+  db_students.value = new nedb({ filename: path, autoload: true })
+}
+// 查找数据
+const findDbData = async (db, key, params) => {
+  console.log('查询的语句：', params)
+  return new Promise((resolve, reject) => {
+    try {
+      if (key === 'find') {
+        db.find(params, (err, docs) => {
+          if (err) {
+            console.error(err)
+          } else {
+            console.log(docs)
+          }
+        })
+      } else if (key === 'count') {
+        // 获取数据库中的文档数量
+        db.count(params, (err, count) => {
+          if (err) {
+            console.error(err)
+            reject(err)
+          } else {
+            console.log(`数据库中的文档数量为: ${count}`)
+            resolve(count)
+          }
+        })
+      }
+    } catch (e) {
+      reject(e)
+      console.log('查找数据库数据失败：', e)
+    }
+  })
+}
+// 删除数据库文件
+const removeDb = async (dbname) => {
+  let path = 'db/' + dbname + '.db'
+  try {
+    fs.unlink(path, function (err) {
+      if (err) {
+        console.error(err)
+      } else {
+        console.log('数据库文件已成功删除。')
+      }
+    })
+  } catch (e) {
+    console.log('删除数据库失败', e)
+  }
+}
+// 导入数据库数据操作
+const creatDb = async (dbname) => {
+  try {
+    let path = 'db/' + dbname + '.db'
+    // 创建数据库文件
+    const db = new nedb({ filename: path, autoload: true })
+    // 导入新的数据文档
+    await jsonData1.value.forEach((item) => {
+      db.insert(item, (err) => {
+        if (err) {
+          console.error(err)
+        } else {
+          console.log('数据已成功导入到数据库中。')
+        }
+      })
+    })
+    console.log('aaaa')
+  } catch (e) {
+    console.log('连接数据库失败：', e)
+  }
+}
 
 // 文件状态改变时调用
 const handleChange = (file) => {
@@ -112,15 +214,22 @@ const handleExceed = (files) => {
 }
 
 // 点击上传文件执行的方法
-const submitUpload = () => {
+const submitUpload = async () => {
   try {
     console.log('点击上传时的路径：', file_path.value)
     const workbook = Xlsx.readFile(file_path.value)
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]]
-    jsonData.value = Xlsx.utils.sheet_to_json(worksheet)
+    const worksheet1 = workbook.Sheets[workbook.SheetNames[0]]
+    const worksheet2 = workbook.Sheets[workbook.SheetNames[1]]
+    jsonData1.value = Xlsx.utils.sheet_to_json(worksheet1)
+    jsonData2.value = Xlsx.utils.sheet_to_json(worksheet2)
     upload.value.clearFiles()
     is_show_dialog_upload.value = false
-    console.log('获取的excel数据', jsonData.value)
+    console.log('获取的excel学生数据：', jsonData1.value)
+    console.log('获取的excel教师数据：', jsonData2.value)
+    // 删除数据库文件
+    await removeDb('students')
+    // 导入数据库数据
+    await creatDb('students')
   } catch (e) {
     console.log('上传文件失败', e)
   }
