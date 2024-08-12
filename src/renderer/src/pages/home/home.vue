@@ -61,6 +61,8 @@ import { nextTick, onMounted, ref } from 'vue'
 import { genFileId } from 'element-plus'
 import TopDataCard from '@renderer/pages/home/components/topDateCard.vue'
 
+const path = require('path')
+const os = require('os')
 const fs = require('fs')
 const nedb = require('nedb')
 const Xlsx = require('xlsx') // 导入xlsx工具
@@ -75,6 +77,7 @@ const db_students = ref() //学生数据库
 const db_teachers = ref() //教师数据库
 const students_count = ref(0) //学生总人数
 const teachers_count = ref(0) //教师总人数
+const documentsPath = path.join(os.homedir(), 'Documents') //获取用户文档路径
 // 学生总人数饼状图数据
 const all_students_chart_data = ref({
   tooltip: {
@@ -182,8 +185,8 @@ const setStudentsCount = async () => {
 //连接数据库
 const connectToTheDb = async () => {
   // 数据库路径
-  const path_students_db = 'db/students.db'
-  const path_teachers_db = 'db/teachers.db'
+  const path_students_db = path.join(documentsPath, '/db/students.db')
+  const path_teachers_db = path.join(documentsPath, 'db/teachers.db')
   // 连接数据库
   db_students.value = new nedb({ filename: path_students_db, autoload: true })
   db_teachers.value = new nedb({ filename: path_teachers_db, autoload: true })
@@ -223,9 +226,9 @@ const findDbData = async (db, key, params) => {
 }
 // 删除数据库文件
 const removeDb = async (dbname) => {
-  let path = 'db/' + dbname + '.db'
+  let path1 = path.join(documentsPath, `/db/${dbname}.db`)
   try {
-    fs.unlink(path, function (err) {
+    fs.unlink(path1, function (err) {
       if (err) {
         console.error(err)
       } else {
@@ -237,13 +240,13 @@ const removeDb = async (dbname) => {
   }
 }
 // 导入数据库数据操作
-const creatDb = async (dbname, data) => {
+const creatDb = async (db, data) => {
   try {
     // 导入新的数据文档
     await Promise.all(
       data.value.map((item) => {
         return new Promise((resolve, reject) => {
-          dbname.insert(item, (err) => {
+          db.insert(item, (err) => {
             if (err) {
               console.error(err)
               reject()
