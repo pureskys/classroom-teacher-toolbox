@@ -1,10 +1,10 @@
 {
   "name": "classroom-teacher-toolbox",
-  "version": "1.0.2",
-  "description": "An Electron application with Vue",
+  "version": "1.0.3",
+  "description": "一个用来提高教师工作效率的工具箱",
   "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://electron-vite.org",
+  "author": "晨阳",
+  "homepage": "https://www.puresky.top",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",

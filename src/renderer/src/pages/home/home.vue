@@ -62,7 +62,8 @@ const upload = ref() //文件暂存地址
 const file_path = ref() //文件路径
 const jsonData1 = ref() //获取的学生数据
 const jsonData2 = ref() //获取的教师数据
-const db_students = ref() //全局数据库
+const db_students = ref() //学生数据库
+const db_teachers = ref() //教师数据库
 // 总人数饼状图数据
 const all_students_chart_data = ref({
   tooltip: {
@@ -87,7 +88,7 @@ const all_students_chart_data = ref({
 })
 
 onMounted(async () => {
-  await connectToTheDb('students')
+  await connectToTheDb() //连接数据库
   await nextTick()
   await setStudentsCount()
 })
@@ -112,10 +113,13 @@ const setStudentsCount = async () => {
   )
 }
 //连接数据库
-const connectToTheDb = async (dbname) => {
-  let path = 'db/' + dbname + '.db'
+const connectToTheDb = async () => {
+  // 数据库路径
+  const path_students_db = 'db/students.db'
+  const path_teachers_db = 'db/teachers.db'
   // 连接数据库
-  db_students.value = new nedb({ filename: path, autoload: true })
+  db_students.value = new nedb({ filename: path_students_db, autoload: true })
+  db_teachers.value = new nedb({ filename: path_teachers_db, autoload: true })
 }
 // 查找数据
 const findDbData = async (db, key, params) => {
@@ -164,22 +168,24 @@ const removeDb = async (dbname) => {
   }
 }
 // 导入数据库数据操作
-const creatDb = async (dbname) => {
+const creatDb = async (dbname, data) => {
   try {
-    let path = 'db/' + dbname + '.db'
-    // 创建数据库文件
-    const db = new nedb({ filename: path, autoload: true })
     // 导入新的数据文档
-    await jsonData1.value.forEach((item) => {
-      db.insert(item, (err) => {
-        if (err) {
-          console.error(err)
-        } else {
-          console.log('数据已成功导入到数据库中。')
-        }
+    await Promise.all(
+      data.value.map((item) => {
+        return new Promise((resolve, reject) => {
+          dbname.insert(item, (err) => {
+            if (err) {
+              console.error(err)
+              reject()
+            } else {
+              console.log('数据已成功导入到数据库中。')
+              resolve()
+            }
+          })
+        })
       })
-    })
-    console.log('aaaa')
+    )
   } catch (e) {
     console.log('连接数据库失败：', e)
   }
@@ -228,8 +234,12 @@ const submitUpload = async () => {
     console.log('获取的excel教师数据：', jsonData2.value)
     // 删除数据库文件
     await removeDb('students')
+    await removeDb('teachers')
     // 导入数据库数据
-    await creatDb('students')
+    await creatDb(db_students.value, jsonData1)
+    await creatDb(db_teachers.value, jsonData2)
+    // 设置男女数量
+    await setStudentsCount()
   } catch (e) {
     console.log('上传文件失败', e)
   }
