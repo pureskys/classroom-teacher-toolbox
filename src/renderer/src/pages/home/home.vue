@@ -77,7 +77,7 @@ const db_students = ref() //学生数据库
 const db_teachers = ref() //教师数据库
 const students_count = ref(0) //学生总人数
 const teachers_count = ref(0) //教师总人数
-const documentsPath = path.join(os.homedir(), 'Documents') //获取用户文档路径
+const db_path = path.join(os.homedir(), 'Documents/CttDb/') //获取数据库路径
 // 学生总人数饼状图数据
 const all_students_chart_data = ref({
   tooltip: {
@@ -185,8 +185,8 @@ const setStudentsCount = async () => {
 //连接数据库
 const connectToTheDb = async () => {
   // 数据库路径
-  const path_students_db = path.join(documentsPath, '/db/students.db')
-  const path_teachers_db = path.join(documentsPath, 'db/teachers.db')
+  const path_students_db = path.join(db_path, 'students.db')
+  const path_teachers_db = path.join(db_path, 'teachers.db')
   // 连接数据库
   db_students.value = new nedb({ filename: path_students_db, autoload: true })
   db_teachers.value = new nedb({ filename: path_teachers_db, autoload: true })
@@ -226,7 +226,7 @@ const findDbData = async (db, key, params) => {
 }
 // 删除数据库文件
 const removeDb = async (dbname) => {
-  let path1 = path.join(documentsPath, `/db/${dbname}.db`)
+  let path1 = path.join(db_path, `${dbname}.db`)
   try {
     fs.unlink(path1, function (err) {
       if (err) {
