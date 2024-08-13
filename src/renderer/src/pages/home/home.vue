@@ -312,6 +312,8 @@ const submitUpload = async () => {
     await creatDb(db_teachers.value, jsonData2)
     // 设置男女数量
     await setStudentsCount()
+    // 设置教师数据
+    await setTeachersCount()
   } catch (e) {
     console.log('上传文件失败', e)
   }
