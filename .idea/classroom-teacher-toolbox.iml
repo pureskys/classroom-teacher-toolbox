@@ -11,5 +11,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="@types/nedb" level="application" />
+    <orderEntry type="library" name="@types/nedb" level="application" />
   </component>
 </module>
