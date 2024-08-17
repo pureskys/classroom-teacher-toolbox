@@ -2,11 +2,11 @@
   <div class="flex w-full items-center justify-center">
     <el-cascader
       v-model="area"
-      clearable
-      placeholder="选择地区"
-      filterable
       :options="pcaTextArr"
       :show-all-levels="false"
+      clearable
+      filterable
+      placeholder="选择地区"
       size="default"
       @change="handleChange"
     />

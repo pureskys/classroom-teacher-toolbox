@@ -3,15 +3,15 @@
     <div class="flex h-2/6">
       <!--      学生总人数卡片布局-->
       <TopDataCard
-        card_name="学生数"
         :chart_data="all_students_chart_data"
         :count="students_count"
+        card_name="学生数"
       ></TopDataCard>
       <!--      教师总人数卡片-->
       <TopDataCard
-        card_name="教师数"
         :chart_data="all_teachers_chart_data"
         :count="teachers_count"
+        card_name="教师数"
       ></TopDataCard>
     </div>
     <div class="flex h-4/6 bg-red-400">asdas</div>
@@ -20,12 +20,12 @@
       <div class="flex flex-row items-stretch justify-center">
         <el-upload
           ref="upload"
-          drag
-          accept=".xls, .xlsx"
           :auto-upload="false"
           :limit="1"
           :on-change="handleChange"
           :on-exceed="handleExceed"
+          accept=".xls, .xlsx"
+          drag
         >
           <el-icon class="el-icon--upload">
             <upload-filled />

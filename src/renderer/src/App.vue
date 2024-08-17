@@ -16,7 +16,7 @@
           <!--      标题展示块-->
           <div class="aside-header">
             <el-avatar :src="icon_cut" fit="cover" shape="square" size="large"></el-avatar>
-            <el-text type="primary" style="font-size: 1.5em; font-weight: bold; letter-spacing: 4px"
+            <el-text style="font-size: 1.5em; font-weight: bold; letter-spacing: 4px" type="primary"
               >CTT
             </el-text>
           </div>
@@ -25,8 +25,8 @@
             v-for="item in menu_list"
             :key="item.index"
             :default-active="activeIndex"
-            router
             mode="vertical"
+            router
             style="width: 100%; border-right: 0"
             @select="handleSelect"
           >
