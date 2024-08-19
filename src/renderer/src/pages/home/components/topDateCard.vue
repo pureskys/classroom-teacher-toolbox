@@ -41,13 +41,11 @@ onMounted(async () => {
 watch(
   chart_data,
   () => {
-    console.log('监听到数据变化')
     drawEcharts(chart_data.value)
   },
   { deep: true }
 )
 const drawEcharts = (data) => {
-  console.log('获取的图表数据：', data)
   myChart1.value.setOption(data)
   window.addEventListener('resize', () => {
     myChart1.value.resize()

@@ -246,16 +246,13 @@ const connectToTheDb = async () => {
 }
 // 查找数据
 const findDbData = async (db, key, params) => {
-  console.log('查询的语句：', params)
   return new Promise((resolve, reject) => {
     try {
       if (key === 'find') {
         db.find(params, (err, docs) => {
           if (err) {
             reject(err)
-            console.error(err)
           } else {
-            console.log(docs)
             resolve(docs)
           }
         })
@@ -266,7 +263,6 @@ const findDbData = async (db, key, params) => {
             console.error(err)
             reject(err)
           } else {
-            console.log(`数据库中的文档数量为: ${count}`)
             resolve(count)
           }
         })
@@ -367,6 +363,8 @@ const submitUpload = async () => {
     await setStudentsCount()
     // 设置教师数据
     await setTeachersCount()
+    // 设置住校生数据
+    await setStudents_B_S_Count()
   } catch (e) {
     console.log('上传文件失败', e)
   }
