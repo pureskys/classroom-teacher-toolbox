@@ -1,21 +1,30 @@
 <template>
   <div class="flex flex-1 flex-col">
     <div class="flex h-2/6">
-      <!--      学生总人数卡片布局-->
+      <!--      学生总人数卡片布局开始-->
       <TopDataCard
         :chart_data="all_students_chart_data"
         :count="students_count"
         card_name="学生数"
       ></TopDataCard>
-      <!--      教师总人数卡片-->
+      <!--      学生总人数卡片布局结束-->
+      <!--      住校总人数卡片开始-->
+      <TopDataCard
+        :chart_data="students_b_s"
+        :count="students_b_s_count"
+        card_name="住校人数"
+      ></TopDataCard>
+      <!--      住校总人数卡片结束-->
+      <!--      教师总人数卡片开始-->
       <TopDataCard
         :chart_data="all_teachers_chart_data"
         :count="teachers_count"
         card_name="教师数"
       ></TopDataCard>
+      <!--      教师总人数卡片结束-->
     </div>
     <div class="flex h-4/6 bg-red-400">asdas</div>
-    <!--    上传文件dialog-->
+    <!--    上传文件dialog开始-->
     <el-dialog v-model="is_show_dialog_upload" :close-on-click-modal="false" center>
       <div class="flex flex-row items-stretch justify-center">
         <el-upload
@@ -52,6 +61,7 @@
         </div>
       </div>
     </el-dialog>
+    <!--    上传文件dialog结束-->
   </div>
 </template>
 
@@ -77,6 +87,7 @@ const db_students = ref() //学生数据库
 const db_teachers = ref() //教师数据库
 const students_count = ref(0) //学生总人数
 const teachers_count = ref(0) //教师总人数
+const students_b_s_count = ref(0) // 住校生总人数
 const db_path = path.join(os.homedir(), 'Documents/CttDb/') //获取数据库路径
 // 学生总人数饼状图数据
 const all_students_chart_data = ref({
@@ -104,7 +115,7 @@ const all_students_chart_data = ref({
     }
   ]
 })
-//教师总人数饼状图数据
+// 教师总人数饼状图数据
 const all_teachers_chart_data = ref({
   tooltip: {
     trigger: 'item'
@@ -125,14 +136,56 @@ const all_teachers_chart_data = ref({
     }
   ]
 })
+// 住校生饼状图数据
+const students_b_s = ref({
+  tooltip: {
+    trigger: 'item'
+  },
+  legend: {
+    left: '10%',
+    top: '0%'
+  },
+  series: [
+    {
+      name: '学生数：',
+      type: 'pie',
+      radius: ['40%', '85%'],
+      top: '25%',
+      label: {
+        show: false,
+        position: 'center'
+      },
+      data: []
+    }
+  ]
+})
+
 // 页面初始化函数
 onMounted(async () => {
   await connectToTheDb() //连接数据库
   await nextTick() //等待UI渲染
   await setStudentsCount() // 设置学生数据
   await setTeachersCount() // 设置教师数据
+  await setStudents_B_S_Count() // 设置住校数据
 })
 
+// 设置住校展示卡片数据
+const setStudents_B_S_Count = async () => {
+  students_b_s_count.value = await findDbData(db_students.value, 'count', { 是否住校: '是' })
+  let students_b_s_count_man = await findDbData(db_students.value, 'count', {
+    是否住校: '是',
+    性别: '男'
+  })
+  let students_b_s_count_woman = await findDbData(db_students.value, 'count', {
+    是否住校: '是',
+    性别: '女'
+  })
+  //初始化住校图表数据
+  students_b_s.value.series[0].data = [
+    { value: students_b_s_count_woman, name: '女生', itemStyle: { color: '#FFC0CB' } },
+    { value: students_b_s_count_man, name: '男生', itemStyle: { color: '#ADD8E6' } }
+  ]
+}
 // 设置教师展示卡片数据
 const setTeachersCount = async () => {
   let data_list = [] //初始化教师图表数据

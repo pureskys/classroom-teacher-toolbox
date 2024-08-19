@@ -1,6 +1,6 @@
 <template>
   <div
-    class="m-2 flex h-32 w-1/6 min-w-fit flex-row rounded-xl border border-gray-200 bg-white p-2"
+    class="m-2 flex h-32 w-1/6 min-w-fit flex-row rounded-xl border border-gray-200 bg-white pb-2 pl-2 pr-0 pt-2"
   >
     <!--        总人数左边布局开始-->
     <div class="ml-2.5 flex flex-col items-center justify-around">
